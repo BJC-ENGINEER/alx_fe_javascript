@@ -1,11 +1,10 @@
-// Initial array of quote objects
 let quotes = [
   { text: "Believe in yourself!", category: "Motivation" },
   { text: "Life is a journey, not a race.", category: "Life" },
   { text: "Stay positive, work hard, make it happen.", category: "Success" },
 ];
 
-// Function to display a random quote
+// Show a random quote
 function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
@@ -17,7 +16,7 @@ function showRandomQuote() {
   `;
 }
 
-// Function to add a new quote
+// Add a new quote
 function addQuote() {
   const textInput = document.getElementById("newQuoteText");
   const categoryInput = document.getElementById("newQuoteCategory");
@@ -37,9 +36,37 @@ function addQuote() {
   }
 }
 
+// ✅ Create the quote form dynamically
+function createAddQuoteForm() {
+  const formContainer = document.getElementById("formContainer");
+
+  const title = document.createElement("h2");
+  title.textContent = "Add a New Quote";
+
+  const textInput = document.createElement("input");
+  textInput.type = "text";
+  textInput.placeholder = "Enter a new quote";
+  textInput.id = "newQuoteText";
+
+  const categoryInput = document.createElement("input");
+  categoryInput.type = "text";
+  categoryInput.placeholder = "Enter quote category";
+  categoryInput.id = "newQuoteCategory";
+
+  const button = document.createElement("button");
+  button.textContent = "Add Quote";
+  button.id = "addQuoteBtn";
+  button.addEventListener("click", addQuote);
+
+  formContainer.appendChild(title);
+  formContainer.appendChild(textInput);
+  formContainer.appendChild(categoryInput);
+  formContainer.appendChild(button);
+}
+
 // Event listeners
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
-document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
 
-// Show an initial quote
+// 🔔 Initialize
 showRandomQuote();
+createAddQuoteForm();
