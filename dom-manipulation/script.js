@@ -116,28 +116,10 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// Create import/export buttons
-function createImportExportButtons() {
-  const formContainer = document.getElementById("formContainer");
-
-  const exportBtn = document.createElement("button");
-  exportBtn.textContent = "Export Quotes to JSON";
-  exportBtn.addEventListener("click", exportToJsonFile);
-
-  const importInput = document.createElement("input");
-  importInput.type = "file";
-  importInput.accept = ".json";
-  importInput.addEventListener("change", importFromJsonFile);
-
-  formContainer.appendChild(document.createElement("br"));
-  formContainer.appendChild(exportBtn);
-  formContainer.appendChild(document.createElement("br"));
-  formContainer.appendChild(importInput);
-}
-
 // Initialize app
 loadQuotes();
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
+document.getElementById("exportQuotes").addEventListener("click", exportToJsonFile);
+document.getElementById("importFile").addEventListener("change", importFromJsonFile);
 createAddQuoteForm();
-createImportExportButtons();
 showRandomQuote();
