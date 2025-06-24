@@ -8,6 +8,9 @@
 <body>
   <h1>Dynamic Quote Generator</h1>
 
+  <!-- Sync Notification -->
+  <div id="syncMessage" style="color: green; font-weight: bold;"></div>
+
   <!-- Filter Dropdown -->
   <label for="categoryFilter">Filter by Category:</label>
   <select id="categoryFilter" onchange="filterQuotes()">
@@ -21,13 +24,14 @@
   <!-- Form Area -->
   <div id="formContainer"></div>
 
-  <!-- Export/Import Buttons -->
+  <!-- Export/Import -->
   <button id="exportQuotes">Export Quotes</button><br><br>
   <input type="file" id="importFile" accept=".json" />
 
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
