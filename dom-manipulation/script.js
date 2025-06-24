@@ -42,27 +42,6 @@ function showRandomQuote() {
   `;
 }
 
-function addQuote() {
-  const textInput = document.getElementById("newQuoteText");
-  const categoryInput = document.getElementById("newQuoteCategory");
-
-  const newQuote = {
-    text: textInput.value.trim(),
-    category: categoryInput.value.trim()
-  };
-
-  if (newQuote.text && newQuote.category) {
-    quotes.push(newQuote);
-    saveQuotes();
-    populateCategories();
-    alert("Quote added successfully!");
-    textInput.value = "";
-    categoryInput.value = "";
-  } else {
-    alert("Please fill in both fields.");
-  }
-}
-
 function populateCategories() {
   const dropdown = document.getElementById("categoryFilter");
   const categories = [...new Set(quotes.map(q => q.category))];
@@ -146,12 +125,52 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// ✅ Task 3: Fetch quotes from mock API using async/await
+// ✅ POST a new quote to the mock server
+async function postQuoteToServer(quote) {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(quote)
+    });
+    const data = await response.json();
+    console.log("Quote posted to server:", data);
+  } catch (error) {
+    console.error("Failed to post quote:", error);
+  }
+}
+
+// ✅ Update addQuote to send to mock server
+function addQuote() {
+  const textInput = document.getElementById("newQuoteText");
+  const categoryInput = document.getElementById("newQuoteCategory");
+
+  const newQuote = {
+    text: textInput.value.trim(),
+    category: categoryInput.value.trim()
+  };
+
+  if (newQuote.text && newQuote.category) {
+    quotes.push(newQuote);
+    saveQuotes();
+    populateCategories();
+    alert("Quote added successfully!");
+    postQuoteToServer(newQuote); // ✅ Send to mock server
+    textInput.value = "";
+    categoryInput.value = "";
+  } else {
+    alert("Please fill in both fields.");
+  }
+}
+
+// ✅ Fetch server quotes using GET + async/await
 async function fetchQuotesFromServer() {
   const response = await fetch("https://jsonplaceholder.typicode.com/posts");
   const data = await response.json();
 
-  // Use only first 5 items and convert them to quote format
+  // Convert first 5 posts to quote format
   const serverQuotes = data.slice(0, 5).map(post => ({
     text: post.title,
     category: "API"
@@ -198,7 +217,7 @@ async function syncWithServer() {
   setTimeout(() => msg.textContent = "", 5000);
 }
 
-// 🟢 Initialization
+// ✅ Initialization
 loadQuotes();
 createAddQuoteForm();
 populateCategories();
@@ -213,6 +232,6 @@ if (lastFilter) {
 }
 showRandomQuote();
 
-// 🟢 Sync on load and every 30 seconds
+// ✅ Initial sync and interval sync
 syncWithServer();
 setInterval(syncWithServer, 30000);
