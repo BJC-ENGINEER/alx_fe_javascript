@@ -142,7 +142,7 @@ async function postQuoteToServer(quote) {
   }
 }
 
-// ✅ Update addQuote to send to mock server
+// ✅ Add new quote and sync with server
 function addQuote() {
   const textInput = document.getElementById("newQuoteText");
   const categoryInput = document.getElementById("newQuoteCategory");
@@ -157,7 +157,7 @@ function addQuote() {
     saveQuotes();
     populateCategories();
     alert("Quote added successfully!");
-    postQuoteToServer(newQuote); // ✅ Send to mock server
+    postQuoteToServer(newQuote);
     textInput.value = "";
     categoryInput.value = "";
   } else {
@@ -165,21 +165,18 @@ function addQuote() {
   }
 }
 
-// ✅ Fetch server quotes using GET + async/await
+// ✅ GET quotes from mock API
 async function fetchQuotesFromServer() {
   const response = await fetch("https://jsonplaceholder.typicode.com/posts");
   const data = await response.json();
 
-  // Convert first 5 posts to quote format
-  const serverQuotes = data.slice(0, 5).map(post => ({
+  return data.slice(0, 5).map(post => ({
     text: post.title,
     category: "API"
   }));
-
-  return serverQuotes;
 }
 
-// ✅ Sync and resolve conflicts (REQUIRED NAME FOR CHECKER)
+// ✅ Sync and resolve conflicts with UI message
 async function syncQuotes() {
   const serverQuotes = await fetchQuotesFromServer();
   let hasConflict = false;
@@ -209,7 +206,7 @@ async function syncQuotes() {
   if (hasConflict) {
     msg.textContent = "Conflicts resolved using server data.";
   } else if (updated) {
-    msg.textContent = "Quotes updated from server.";
+    msg.textContent = "Quotes synced with server!";
   } else {
     msg.textContent = "Quotes are already up to date.";
   }
@@ -232,6 +229,6 @@ if (lastFilter) {
 }
 showRandomQuote();
 
-// ✅ Initial sync and interval sync
+// ✅ Initial sync and periodic sync
 syncQuotes();
 setInterval(syncQuotes, 30000);
