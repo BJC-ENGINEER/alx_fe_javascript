@@ -146,64 +146,59 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// --- Sync and Conflict Resolution ---
+// ✅ Task 3: Fetch quotes from mock API using async/await
+async function fetchQuotesFromServer() {
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+  const data = await response.json();
 
-function fetchQuotesFromServer() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const serverQuotes = [
-        { text: "Believe in yourself!", category: "Motivation" },
-        { text: "Stay positive, work hard, make it happen.", category: "Success" },
-        { text: "Dream big, pray bigger.", category: "Faith" },
-        { text: "Life is a journey, not a destination.", category: "Life" }, // conflict with local
-      ];
-      resolve(serverQuotes);
-    }, 1000);
-  });
+  // Use only first 5 items and convert them to quote format
+  const serverQuotes = data.slice(0, 5).map(post => ({
+    text: post.title,
+    category: "API"
+  }));
+
+  return serverQuotes;
 }
 
-function syncWithServer() {
-  fetchQuotesFromServer().then(serverQuotes => {
-    let hasConflict = false;
-    let updated = false;
+// ✅ Sync and resolve conflicts
+async function syncWithServer() {
+  const serverQuotes = await fetchQuotesFromServer();
+  let hasConflict = false;
+  let updated = false;
 
-    const localQuotesMap = new Map(quotes.map(q => [q.text, q]));
+  const localQuotesMap = new Map(quotes.map(q => [q.text, q]));
 
-    serverQuotes.forEach(serverQuote => {
-      const localQuote = localQuotesMap.get(serverQuote.text);
-      if (!localQuote) {
-        quotes.push(serverQuote);
-        updated = true;
-      } else if (localQuote.category !== serverQuote.category) {
-        localQuote.category = serverQuote.category;
-        hasConflict = true;
-        updated = true;
-      }
-    });
-
-    if (updated) {
-      saveQuotes();
-      populateCategories();
-      showRandomQuote();
+  serverQuotes.forEach(serverQuote => {
+    const localQuote = localQuotesMap.get(serverQuote.text);
+    if (!localQuote) {
+      quotes.push(serverQuote);
+      updated = true;
+    } else if (localQuote.category !== serverQuote.category) {
+      localQuote.category = serverQuote.category;
+      hasConflict = true;
+      updated = true;
     }
-
-    const msg = document.getElementById("syncMessage");
-    if (hasConflict) {
-      msg.textContent = "Conflicts resolved using server data.";
-    } else if (updated) {
-      msg.textContent = "Quotes updated from server.";
-    } else {
-      msg.textContent = "Quotes are already up to date.";
-    }
-
-    setTimeout(() => msg.textContent = "", 5000);
   });
+
+  if (updated) {
+    saveQuotes();
+    populateCategories();
+    showRandomQuote();
+  }
+
+  const msg = document.getElementById("syncMessage");
+  if (hasConflict) {
+    msg.textContent = "Conflicts resolved using server data.";
+  } else if (updated) {
+    msg.textContent = "Quotes updated from server.";
+  } else {
+    msg.textContent = "Quotes are already up to date.";
+  }
+
+  setTimeout(() => msg.textContent = "", 5000);
 }
 
-// Run sync every 30 seconds
-setInterval(syncWithServer, 30000);
-
-// --- Init ---
+// 🟢 Initialization
 loadQuotes();
 createAddQuoteForm();
 populateCategories();
@@ -217,4 +212,7 @@ if (lastFilter) {
   document.getElementById("categoryFilter").value = lastFilter;
 }
 showRandomQuote();
+
+// 🟢 Sync on load and every 30 seconds
 syncWithServer();
+setInterval(syncWithServer, 30000);
